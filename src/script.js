@@ -2,6 +2,8 @@ import * as BS from "../node_modules/brilliantsole/build/brilliantsole.module.mi
 window.BS = BS;
 //BS.setAllConsoleLevelFlags({ log: true });
 
+BS.Device.ClearSensorConfigurationOnLeave = false;
+
 const client = new BS.WebSocketClient();
 console.log({ client });
 
@@ -342,13 +344,18 @@ BS.DeviceManager.AddEventListener("connectedDevices", (event) => {
         connectedDeviceContainer.querySelectorAll("input").forEach((input) => (input.disabled = !device.isConnected));
       });
 
-      device.addEventListener("getSensorConfiguration", () => {
+      const updateSensorConfigurationInputs = () => {
         for (const sensorType in device.sensorConfiguration) {
           connectedDeviceContainer.querySelector(
             `.sensorTypeConfiguration[data-sensor-type="${sensorType}"] input`
           ).value = device.sensorConfiguration[sensorType];
         }
+      };
+
+      device.addEventListener("getSensorConfiguration", () => {
+        updateSensorConfigurationInputs();
       });
+      updateSensorConfigurationInputs();
 
       /** @type {HTMLPreElement} */
       const sensorDataPre = connectedDeviceContainer.querySelector(".sensorData");

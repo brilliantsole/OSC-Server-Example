@@ -2,7 +2,7 @@
   "name": "osc-server-example",
   "version": "1.0.0",
   "main": "server.js",
-  "repository": "https://github.com/brilliantsole/OSC-Server-Template.git",
+  "repository": "https://github.com/brilliantsole/OSC-Server-Example.git",
   "author": "Zack <zack@brilliantsole.com>",
   "license": "MIT",
   "homepage": "https://www.runonbrilliantsole.com/",

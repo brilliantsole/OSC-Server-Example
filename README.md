@@ -1,4 +1,4 @@
-# OSC-Server-Template
+# OSC-Server-Example
 
 OSC Server Template using the Brilliant Sole JavaScript SDK
 

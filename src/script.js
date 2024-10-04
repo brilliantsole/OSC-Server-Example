@@ -1,5 +1,6 @@
 import * as BS from "../node_modules/brilliantsole/build/brilliantsole.module.min.js";
 window.BS = BS;
+
 //BS.setAllConsoleLevelFlags({ log: true });
 
 BS.Device.ClearSensorConfigurationOnLeave = false;

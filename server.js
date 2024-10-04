@@ -35,16 +35,50 @@ const webSocketServer = new BS.WebSocketServer();
 webSocketServer.clearSensorConfigurationsWhenNoClients = false;
 webSocketServer.server = wss;
 
+const sendPort = 5000;
+const receivePort = 5001;
+const localAddress = "0.0.0.0";
+const sendAddress = "0.0.0.0";
+
 // OSC
 const oscServer = new osc.UDPPort({
-  localAddress: "0.0.0.0",
-  localPort: 57121,
+  localAddress: localAddress,
+  localPort: receivePort,
   metadata: true,
 });
 
 oscServer.on("message", function (oscMsg, timeTag, info) {
-  console.log("An OSC message just arrived!", oscMsg);
-  console.log("Remote info is: ", info);
+  console.log("received message", oscMsg);
+
+  const address = oscMsg.address.split("/").filter(Boolean);
+  const { args } = oscMsg; // [...{type, value}]
+
+  switch (address[0]) {
+    case "setSensorConfiguration":
+      /** @type {BS.SensorConfiguration} */
+      const sensorConfiguration = {};
+
+      /** @type {BS.SensorType} */
+      let sensorType;
+
+      args.forEach((arg) => {
+        switch (arg.type) {
+          case "s":
+            if (BS.SensorTypes.includes(arg.value)) {
+              sensorType = arg.value;
+            }
+            break;
+          case "f":
+            sensorConfiguration[sensorType] = arg.value;
+            break;
+        }
+      });
+      devicePair.setSensorConfiguration(sensorConfiguration);
+      break;
+    default:
+      console.log(`uncaught address ${address[0]}`);
+      break;
+  }
 });
 
 oscServer.open();
@@ -52,41 +86,49 @@ oscServer.open();
 const devicePair = BS.DevicePair.shared;
 
 oscServer.on("ready", function () {
-  devicePair.addEventListener("deviceOrientation", (event) => {
+  devicePair.addEventListener("deviceSensorData", (event) => {
+    let args;
+    switch (event.message.sensorType) {
+      case "orientation":
+        {
+          const { pitch, heading, roll } = event.message.orientation;
+          args = [pitch, heading, roll].map((value) => {
+            return {
+              type: "f",
+              value,
+            };
+          });
+        }
+        break;
+      case "pressure":
+        args = [
+          {
+            type: "f",
+            value: event.message.pressure.normalizedSum,
+          },
+        ];
+        break;
+      default:
+        break;
+    }
+
+    if (!args) {
+      return;
+    }
+
     oscServer.send(
       {
-        address: "/orientation",
+        address: `/${event.message.sensorType}`,
         args: [
           {
             type: "s",
-            value: "left",
+            value: event.message.side,
           },
-          {
-            type: "f",
-            value: event.message.orientation.heading,
-          },
+          ...args,
         ],
       },
-      "127.0.0.1",
-      8000
+      sendAddress,
+      sendPort
     );
   });
-
-  oscServer.send(
-    {
-      address: "/s_new",
-      args: [
-        {
-          type: "s",
-          value: "default",
-        },
-        {
-          type: "i",
-          value: 100,
-        },
-      ],
-    },
-    "127.0.0.1",
-    8000
-  );
 });

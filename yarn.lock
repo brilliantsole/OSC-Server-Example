@@ -343,10 +343,10 @@ brace-expansion@^2.0.1:
   dependencies:
     balanced-match "^1.0.0"
 
-brilliantsole@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/brilliantsole/-/brilliantsole-0.0.3.tgz#cad9d1bdabd1cbfccd2fb7c58f6647407e9bbbeb"
-  integrity sha512-FONRElCMdYDBEeQxhlgObmpI0HbDyvgC2mbNh0QWWYPuUpDPtV4YFiyaKCoYRqlDmpMC5xlCPv5ciRE/vYrg4Q==
+brilliantsole@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/brilliantsole/-/brilliantsole-0.0.10.tgz#5c089240925a07c472070b029d5eb4dd761b6f1f"
+  integrity sha512-Geq2aXH4ouaK2hqcIdEQx3CdjVFqNT5MFa/Ud6LSav0IMFObh54Ey7YbnQe5XUJ5uxmhxaBiQoJkmSa+iRc/3A==
   dependencies:
     "@abandonware/noble" "^1.9.2-24"
     auto-bind "^5.0.1"
@@ -1802,6 +1802,11 @@ tar@^6.1.11, tar@^6.2.0, tar@^6.2.1:
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"
+
+three@^0.169.0:
+  version "0.169.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.169.0.tgz#4a62114988ad9728d73526d1f1de6760c56b4adc"
+  integrity sha512-Ed906MA3dR4TS5riErd4QBsRGPcx+HBDX2O5yYE5GqJeFQTPU+M56Va/f/Oph9X7uZo3W3o4l2ZhBZ6f6qUv0w==
 
 toidentifier@1.0.1:
   version "1.0.1"

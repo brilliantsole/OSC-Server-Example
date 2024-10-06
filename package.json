@@ -11,10 +11,11 @@
   },
   "type": "module",
   "dependencies": {
-    "brilliantsole": "^0.0.3",
+    "brilliantsole": "^0.0.10",
     "express": "^4.21.0",
     "ip": "^2.0.1",
     "osc": "^2.4.5",
+    "three": "^0.169.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

@@ -5,8 +5,9 @@ const app = express();
 import fs from "fs";
 import ip from "ip";
 import { WebSocketServer } from "ws";
-import * as BS from "brilliantsole";
+import * as BS from "brilliantsole/node";
 import osc from "osc";
+import * as THREE from "three";
 
 // HTTPS SERVER
 app.use(function (req, res, next) {
@@ -85,6 +86,15 @@ oscServer.open();
 
 const devicePair = BS.DevicePair.shared;
 
+const quaternions = {
+  left: new THREE.Quaternion(),
+  right: new THREE.Quaternion(),
+};
+const eulers = {
+  left: new THREE.Euler(0, 0, 0, "YXZ"),
+  right: new THREE.Euler(0, 0, 0, "YXZ"),
+};
+
 oscServer.on("ready", function () {
   devicePair.addEventListener("deviceSensorData", (event) => {
     let args;
@@ -100,11 +110,43 @@ oscServer.on("ready", function () {
           });
         }
         break;
+      case "gameRotation":
+        try {
+          const quaternion = quaternions[event.message.side];
+          quaternion.copy(event.message.gameRotation);
+          const euler = eulers[event.message.side];
+          euler.setFromQuaternion(quaternion);
+          const [pitch, yaw, roll, order] = euler.toArray();
+          args = [pitch, yaw, roll].map((value) => {
+            return {
+              type: "f",
+              value: THREE.MathUtils.radToDeg(value),
+            };
+          });
+        } catch (error) {
+          console.error(error);
+        }
+        break;
+      case "linearAcceleration":
+        {
+          const { x, y, z } = event.message.linearAcceleration;
+          args = [x, y, z].map((value) => {
+            return {
+              type: "f",
+              value,
+            };
+          });
+        }
+        break;
       case "pressure":
         args = [
           {
             type: "f",
             value: event.message.pressure.normalizedSum,
+          },
+          {
+            type: "f",
+            value: event.message.pressure.normalizedCenter?.y || 0,
           },
         ];
         break;

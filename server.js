@@ -146,7 +146,7 @@ oscServer.on("ready", function () {
           },
           {
             type: "f",
-            value: event.message.pressure.normalizedCenter?.y || 0,
+            value: event.message.pressure.normalizedSum > 0.01 ? event.message.pressure.normalizedCenter?.y || 0 : 0,
           },
         ];
         break;

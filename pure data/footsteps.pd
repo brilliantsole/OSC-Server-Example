@@ -1,4 +1,4 @@
-#N canvas 551 72 544 649 12;
+#N canvas 396 38 544 649 12;
 #X obj 295 69 netreceive -u -b;
 #X obj 295 97 oscparse;
 #X obj 367 126 print;

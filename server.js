@@ -70,6 +70,7 @@ oscServer.on("message", function (oscMsg, timeTag, info) {
             }
             break;
           case "f":
+          case "i":
             sensorConfiguration[sensorType] = arg.value;
             break;
         }
@@ -95,6 +96,8 @@ const eulers = {
   right: new THREE.Euler(0, 0, 0, "YXZ"),
 };
 
+let sendQuaternionAsEuler = false;
+
 oscServer.on("ready", function () {
   devicePair.addEventListener("deviceSensorData", (event) => {
     let args;
@@ -111,9 +114,9 @@ oscServer.on("ready", function () {
         }
         break;
       case "gameRotation":
-        try {
-          const quaternion = quaternions[event.message.side];
-          quaternion.copy(event.message.gameRotation);
+        const quaternion = quaternions[event.message.side];
+        quaternion.copy(event.message.gameRotation);
+        if (sendQuaternionAsEuler) {
           const euler = eulers[event.message.side];
           euler.setFromQuaternion(quaternion);
           const [pitch, yaw, roll, order] = euler.toArray();
@@ -123,8 +126,14 @@ oscServer.on("ready", function () {
               value: THREE.MathUtils.radToDeg(value),
             };
           });
-        } catch (error) {
-          console.error(error);
+        } else {
+          const { x, y, z, w } = event.message.gameRotation;
+          args = [x, y, z, w].map((value) => {
+            return {
+              type: "f",
+              value,
+            };
+          });
         }
         break;
       case "linearAcceleration":

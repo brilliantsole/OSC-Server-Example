@@ -77,6 +77,10 @@ oscServer.on("message", function (oscMsg, timeTag, info) {
       });
       devicePair.setSensorConfiguration(sensorConfiguration);
       break;
+    case "resetGameRotation":
+      inverseGameRotation.left.copy(latestGameRotation.left).invert();
+      inverseGameRotation.right.copy(latestGameRotation.right).invert();
+      break;
     default:
       console.log(`uncaught address ${address[0]}`);
       break;
@@ -95,13 +99,30 @@ const eulers = {
   left: new THREE.Euler(0, 0, 0, "YXZ"),
   right: new THREE.Euler(0, 0, 0, "YXZ"),
 };
+const inverseGameRotation = {
+  left: new THREE.Quaternion(),
+  right: new THREE.Quaternion(),
+};
+const gameRotation = {
+  left: new THREE.Quaternion(),
+  right: new THREE.Quaternion(),
+};
+const latestGameRotation = {
+  left: new THREE.Quaternion(),
+  right: new THREE.Quaternion(),
+};
+const linearAcceleration = {
+  left: new THREE.Vector3(),
+  right: new THREE.Vector3(),
+};
 
 let sendQuaternionAsEuler = false;
 
 oscServer.on("ready", function () {
   devicePair.addEventListener("deviceSensorData", (event) => {
+    const { side, sensorType } = event.message;
     let args;
-    switch (event.message.sensorType) {
+    switch (sensorType) {
       case "orientation":
         {
           const { pitch, heading, roll } = event.message.orientation;
@@ -114,10 +135,12 @@ oscServer.on("ready", function () {
         }
         break;
       case "gameRotation":
-        const quaternion = quaternions[event.message.side];
+        const quaternion = gameRotation[side];
         quaternion.copy(event.message.gameRotation);
+        quaternion.premultiply(inverseGameRotation[side]);
+
         if (sendQuaternionAsEuler) {
-          const euler = eulers[event.message.side];
+          const euler = eulers[side];
           euler.setFromQuaternion(quaternion);
           const [pitch, yaw, roll, order] = euler.toArray();
           args = [pitch, yaw, roll].map((value) => {
@@ -127,7 +150,7 @@ oscServer.on("ready", function () {
             };
           });
         } else {
-          const { x, y, z, w } = event.message.gameRotation;
+          const { x, y, z, w } = quaternion;
           args = [x, y, z, w].map((value) => {
             return {
               type: "f",
@@ -135,10 +158,15 @@ oscServer.on("ready", function () {
             };
           });
         }
+
+        latestGameRotation[side].copy(event.message.gameRotation);
         break;
       case "linearAcceleration":
         {
-          const { x, y, z } = event.message.linearAcceleration;
+          const vector = linearAcceleration[side];
+          vector.copy(event.message.linearAcceleration);
+          vector.applyQuaternion(gameRotation[side]);
+          const [x, y, z] = vector.toArray();
           args = [x, y, z].map((value) => {
             return {
               type: "f",
@@ -169,11 +197,11 @@ oscServer.on("ready", function () {
 
     oscServer.send(
       {
-        address: `/${event.message.sensorType}`,
+        address: `/${sensorType}`,
         args: [
           {
             type: "s",
-            value: event.message.side,
+            value: side,
           },
           ...args,
         ],

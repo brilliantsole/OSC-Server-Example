@@ -117,6 +117,7 @@ const linearAcceleration = {
 };
 
 let sendQuaternionAsEuler = false;
+let includePressureSensors = true;
 
 oscServer.on("ready", function () {
   devicePair.addEventListener("deviceSensorData", (event) => {
@@ -186,6 +187,14 @@ oscServer.on("ready", function () {
             value: event.message.pressure.normalizedSum > 0.01 ? event.message.pressure.normalizedCenter?.y || 0 : 0,
           },
         ];
+        if (includePressureSensors) {
+          event.message.pressure.sensors.forEach((sensor) => {
+            args.push({
+              type: "f",
+              value: sensor.normalizedValue,
+            });
+          });
+        }
         break;
       default:
         break;

@@ -11,7 +11,7 @@
   },
   "type": "module",
   "dependencies": {
-    "brilliantsole": "^0.0.10",
+    "brilliantsole": "^0.0.16",
     "express": "^4.21.0",
     "ip": "^2.0.1",
     "osc": "^2.4.5",

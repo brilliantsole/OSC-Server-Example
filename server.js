@@ -176,6 +176,17 @@ oscServer.on("ready", function () {
           });
         }
         break;
+      case "gyroscope":
+        {
+          const { x, y, z } = event.message.gyroscope;
+          args = [x, y, z].map((value) => {
+            return {
+              type: "f",
+              value,
+            };
+          });
+        }
+        break;
       case "pressure":
         args = [
           {

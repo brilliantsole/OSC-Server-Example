@@ -78,8 +78,19 @@ oscServer.on("message", function (oscMsg, timeTag, info) {
       devicePair.setSensorConfiguration(sensorConfiguration);
       break;
     case "resetGameRotation":
-      inverseGameRotation.left.copy(latestGameRotation.left).invert();
-      inverseGameRotation.right.copy(latestGameRotation.right).invert();
+      BS.InsoleSides.forEach((side) => {
+        gameRotationEuler[side].setFromQuaternion(latestGameRotation[side]);
+        gameRotationEuler[side].x = gameRotation[side].z = 0;
+        gameRotationEuler[side].y *= -1;
+        inverseGameRotation[side].setFromEuler(gameRotationEuler[side]);
+      });
+      break;
+    case "resetOrientation":
+      BS.InsoleSides.forEach((side) => {
+        inverseOrientations[side].copy(latestOrientation[side]);
+        inverseOrientations[side].x = inverseOrientations[side].z = 0;
+        inverseOrientations[side].y *= -1;
+      });
       break;
     default:
       console.log(`uncaught address ${address[0]}`);
@@ -99,6 +110,18 @@ const eulers = {
   left: new THREE.Euler(0, 0, 0, "YXZ"),
   right: new THREE.Euler(0, 0, 0, "YXZ"),
 };
+const orientations = {
+  left: new THREE.Euler(0, 0, 0, "YXZ"),
+  right: new THREE.Euler(0, 0, 0, "YXZ"),
+};
+const latestOrientation = {
+  left: new THREE.Euler(0, 0, 0, "YXZ"),
+  right: new THREE.Euler(0, 0, 0, "YXZ"),
+};
+const inverseOrientations = {
+  left: new THREE.Euler(0, 0, 0, "YXZ"),
+  right: new THREE.Euler(0, 0, 0, "YXZ"),
+};
 const inverseGameRotation = {
   left: new THREE.Quaternion(),
   right: new THREE.Quaternion(),
@@ -106,6 +129,10 @@ const inverseGameRotation = {
 const gameRotation = {
   left: new THREE.Quaternion(),
   right: new THREE.Quaternion(),
+};
+const gameRotationEuler = {
+  left: new THREE.Euler(0, 0, 0, "YXZ"),
+  right: new THREE.Euler(0, 0, 0, "YXZ"),
 };
 const latestGameRotation = {
   left: new THREE.Quaternion(),
@@ -126,13 +153,19 @@ oscServer.on("ready", function () {
     switch (sensorType) {
       case "orientation":
         {
+          const orientation = orientations[side];
           const { pitch, heading, roll } = event.message.orientation;
-          args = [pitch, heading, roll].map((value) => {
+          orientation.set(pitch, heading, roll);
+          orientation.y += inverseOrientations[side].y;
+
+          const { x, y, z } = orientation;
+          args = [x, y, z].map((value) => {
             return {
               type: "f",
               value,
             };
           });
+          latestOrientation[side].set(pitch, heading, roll);
         }
         break;
       case "gameRotation":

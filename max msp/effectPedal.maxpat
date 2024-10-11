@@ -40,6 +40,29 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"bgmode" : 0,
+					"border" : 0,
+					"clickthrough" : 0,
+					"enablehscroll" : 0,
+					"enablevscroll" : 0,
+					"hint" : "",
+					"id" : "obj-125",
+					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
+					"maxclass" : "bpatcher",
+					"name" : "Rnbo-Input~.maxpat",
+					"numinlets" : 1,
+					"numoutlets" : 5,
+					"offset" : [ 0.0, 0.0 ],
+					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
+					"patching_rect" : [ 425.0, 435.0, 230.0, 123.0 ],
+					"varname" : "Input[1]",
+					"viewvisibility" : 1
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"elementcolor" : [ 0.35, 0.35, 0.35, 1.0 ],
 					"id" : "obj-124",
 					"knobcolor" : [ 0.93, 0.93, 0.35, 1.0 ],
@@ -70,7 +93,7 @@
 					"numoutlets" : 5,
 					"offset" : [ 0.0, 0.0 ],
 					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
-					"patching_rect" : [ 1168.0, 594.0, 230.0, 123.0 ],
+					"patching_rect" : [ 1168.0, 594.0, 231.0, 124.0 ],
 					"varname" : "Input",
 					"viewvisibility" : 1
 				}
@@ -20966,7 +20989,7 @@
 							}
 ,
 							"drive" : 							{
-								"value" : 0.0
+								"value" : 45.0
 							}
 ,
 							"bass" : 							{
@@ -21244,7 +21267,7 @@
 										}
 ,
 										"drive" : 										{
-											"value" : 0.0
+											"value" : 45.0
 										}
 ,
 										"bass" : 										{
@@ -23457,6 +23480,9 @@
 			}
  ],
 		"parameters" : 		{
+			"obj-125::obj-12" : [ "Browse[1]", "Browse", 0 ],
+			"obj-125::obj-2" : [ "Input[1]", "Input", 0 ],
+			"obj-125::obj-41" : [ "InputGain[1]", "Input", 0 ],
 			"obj-36" : [ "Gain", "Gain", 0 ],
 			"obj-37" : [ "rnbo~", "rnbo~", 0 ],
 			"obj-52::obj-1::obj-32" : [ "MIDI", "MIDI", 0 ],
@@ -23473,6 +23499,10 @@
 			}
 ,
 			"parameter_overrides" : 			{
+				"obj-125::obj-41" : 				{
+					"parameter_longname" : "InputGain[1]"
+				}
+,
 				"obj-52::obj-1::obj-32" : 				{
 					"parameter_invisible" : 0,
 					"parameter_modmode" : 0,
@@ -23517,6 +23547,13 @@
 				"bootpath" : "~/Documents/Max 8/Packages/RNBO Guitar Pedals/misc",
 				"patcherrelativepath" : "../../../Max 8/Packages/RNBO Guitar Pedals/misc",
 				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "RockIt.wav",
+				"bootpath" : "~/Documents/Max 8/Packages/RNBO Guitar Pedals/media",
+				"patcherrelativepath" : "../../../Max 8/Packages/RNBO Guitar Pedals/media",
+				"type" : "WAVE",
 				"implicit" : 1
 			}
  ],

@@ -791,7 +791,8 @@ BS.DeviceManager.AddEventListener("connectedDevices", (event) => {
         updateTfliteUI();
       });
       updateTfliteUI();
-
+    }
+    if (!connectedDevicesContainer.contains(connectedDeviceContainer)) {
       connectedDevicesContainer.appendChild(connectedDeviceContainer);
     }
   });
